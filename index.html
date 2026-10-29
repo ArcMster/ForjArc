@@ -2,6 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
+<script>document.documentElement.classList.add("js");</script>
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>ForjArc: Forge the arc of your life</title>
 <meta name="description" content="ForjArc tracks your workouts, habits and daily promises in one system, so fitness becomes a byproduct of who you are becoming.">
@@ -133,7 +134,7 @@
   .day { text-align: center; }
   .day svg { display: block; width: 100%; max-width: 96px; margin: 0 auto; overflow: visible; }
   .day .seg-track { stroke: var(--track); }
-  .day .seg-fill { stroke: url(#heat-small); }
+  .day .seg-fill { stroke: url(#heat-small); transition: stroke-dasharray 1.2s cubic-bezier(.2,.7,.2,1); }
   .day .d { margin-top: 8px; font-weight: 600; font-size: 0.95rem; }
   .day .p { font-size: 0.85rem; color: var(--ink-soft); }
   .day.today .d { color: var(--heat-1); }
@@ -160,13 +161,104 @@
   .foot-brand img { width: 110px; height: auto; }
   footer { padding-block: 32px 48px; color: var(--ink-soft); font-size: 0.92rem; display: flex; flex-wrap: wrap; gap: 8px 24px; justify-content: space-between; }
 
+  /* Motion: load sequence */
+  .sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0; }
+  .progress { position: fixed; top: env(safe-area-inset-top, 0px); left: 0; right: 0; height: 3px; z-index: 20; transform-origin: 0 50%; transform: scaleX(0); background: linear-gradient(90deg, var(--heat-1), var(--heat-2), var(--heat-3)); pointer-events: none; }
+  .js .site-header { opacity: 0; transform: translateY(-14px); transition: opacity .7s ease, transform .7s cubic-bezier(.2,.8,.2,1); }
+  .js.is-loaded .site-header { opacity: 1; transform: none; }
+  h1 .w { display: inline-block; overflow: hidden; vertical-align: top; padding-bottom: .08em; margin-bottom: -.08em; }
+  h1 .wi { display: inline-block; transform: translateY(110%); transition: transform 1s cubic-bezier(.2,.8,.2,1); transition-delay: var(--d, 0ms); }
+  .is-loaded h1 .wi { transform: none; }
+  #hero-title { will-change: transform; }
+  .js .hero .lede, .js .hero .cta-row { opacity: 0; transform: translateY(18px); transition: opacity .8s ease, transform .8s cubic-bezier(.2,.8,.2,1); }
+  .js .hero .lede { transition-delay: 700ms; }
+  .js .hero .cta-row { transition-delay: 840ms; }
+  .js .forge { opacity: 0; transform: translateY(28px) scale(.96); transition: opacity .9s ease, transform 1s cubic-bezier(.2,.8,.2,1); transition-delay: 450ms; }
+  .js.is-loaded .hero .lede, .js.is-loaded .hero .cta-row, .js.is-loaded .forge { opacity: 1; transform: none; }
+  @keyframes ember { 0%, 100% { filter: drop-shadow(0 0 7px var(--glow)); } 50% { filter: drop-shadow(0 0 20px var(--glow)); } }
+  .gauge.complete .fills { animation: ember 2.4s ease-in-out infinite; }
+
+  /* Splash: logo forge sequence */
+  .splash { display: none; }
+  .js .splash { display: flex; position: fixed; inset: 0; z-index: 50; flex-direction: column; align-items: center; justify-content: center; gap: 14px; padding: env(safe-area-inset-top, 0px) 20px env(safe-area-inset-bottom, 0px); background: #1B1C20; color: #EAEFF3; clip-path: inset(0 0 0 0); transition: clip-path .9s cubic-bezier(.7,0,.2,1); cursor: pointer; }
+  .splash.leave { clip-path: inset(0 0 100% 0); pointer-events: none; }
+  html.splashing { overflow: hidden; }
+  .splash-stage { position: relative; width: 200px; height: 200px; }
+  .splash-ring { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; }
+  .ring-track { fill: none; stroke: #2B2D33; stroke-width: 6; stroke-linecap: round; }
+  .ring-fill { fill: none; stroke: url(#heat-splash); stroke-width: 6; stroke-linecap: round; stroke-dasharray: 100 100; stroke-dashoffset: 100; opacity: 0; }
+  .splash.play .ring-fill { animation: ringdraw 1.05s cubic-bezier(.5,0,.2,1) forwards, ringglow 1.4s ease-in-out 1.05s infinite; }
+  @keyframes ringdraw { 0% { stroke-dashoffset: 100; opacity: 0; } 6% { opacity: 1; } 100% { stroke-dashoffset: 0; opacity: 1; } }
+  @keyframes ringglow { 0%, 100% { filter: drop-shadow(0 0 4px rgba(255,140,50,.45)); } 50% { filter: drop-shadow(0 0 14px rgba(255,140,50,.8)); } }
+  .mark-wrap { position: absolute; inset: 0; display: grid; place-items: center; }
+  .splash-mark { height: 118px; width: auto; opacity: 0; transform-origin: 50% 100%; }
+  .splash.play .splash-mark { animation: drop .8s cubic-bezier(.3,.7,.3,1) .25s forwards; }
+  @keyframes drop {
+    0% { opacity: 0; transform: translateY(-80px) rotate(-14deg); }
+    55% { opacity: 1; transform: translateY(6px) rotate(2deg) scale(1.04, .92); }
+    72% { transform: translateY(-4px) rotate(-1deg) scale(.98, 1.03); }
+    100% { opacity: 1; transform: none; }
+  }
+  .flash { position: absolute; left: 50%; top: 74%; width: 190px; height: 190px; margin: -95px 0 0 -95px; border-radius: 50%; background: radial-gradient(circle, rgba(255,166,58,.6), rgba(255,106,61,0) 65%); opacity: 0; transform: scale(.3); }
+  .splash.play .flash { animation: flash .75s ease-out .68s forwards; }
+  @keyframes flash { 0% { opacity: 0; transform: scale(.3); } 25% { opacity: 1; } 100% { opacity: 0; transform: scale(1.5); } }
+  .spark { position: absolute; left: 50%; top: 77%; width: 5px; height: 3px; margin: -1.5px 0 0 -2.5px; border-radius: 2px; background: #FFC46B; box-shadow: 0 0 6px rgba(255,166,58,.9); opacity: 0; transform: rotate(var(--r)); }
+  .splash.play .spark { animation: spark var(--t, .7s) cubic-bezier(.1,.6,.3,1) .69s forwards; }
+  @keyframes spark { 0% { opacity: 1; transform: translate(0, 0) rotate(var(--r)) scale(1.4, 1); } 100% { opacity: 0; transform: translate(var(--x), var(--y)) rotate(var(--r)) scale(.4); } }
+  .splash-word { display: flex; overflow: hidden; padding-bottom: .08em; font-family: var(--font-display); font-weight: 800; font-size: clamp(2.4rem, 7vw, 3.4rem); line-height: 1; letter-spacing: .02em; color: #D98A3D; }
+  .splash-word span { display: inline-block; transform: translateY(110%); }
+  .splash.play .splash-word span { animation: rise .65s cubic-bezier(.2,.8,.2,1) var(--d) forwards; }
+  @keyframes rise { to { transform: none; } }
+  .splash-tag { margin: 0; font-size: .95rem; color: #A9B6C2; opacity: 0; }
+  .splash.play .splash-tag { animation: fadein .7s ease 1.4s forwards; }
+  @keyframes fadein { to { opacity: 1; } }
+  .splash.static .splash-mark, .splash.static .splash-tag, .splash.static .ring-fill { opacity: 1; }
+  .splash.static .ring-fill { stroke-dashoffset: 0; }
+  .splash.static .splash-word span { transform: none; }
+
+  /* Motion: scroll */
+  .js .reveal { opacity: 0; transform: translateY(36px); transition: opacity .9s ease, transform .9s cubic-bezier(.2,.8,.2,1); transition-delay: var(--d, 0ms); }
+  .js .reveal.in { opacity: 1; transform: none; }
+  .js .final.reveal { transform: translateY(36px) scale(.97); }
+  .js .final.reveal.in { transform: none; }
+  .statement .sw { opacity: .18; transition: opacity .4s ease; }
+  .statement .sw.lit { opacity: 1; }
+
   @media (prefers-reduced-motion: reduce) {
     html { scroll-behavior: auto; }
+    .js .site-header, .js .hero .lede, .js .hero .cta-row, .js .forge, .js .reveal, .js .final.reveal { opacity: 1 !important; transform: none !important; transition: none !important; }
+    h1 .wi { transform: none !important; transition: none !important; }
+    .gauge.complete .fills { animation: none; }
+    .day .seg-fill, .statement .sw { transition: none; }
+    .progress { display: none; }
+    .js .splash { transition: opacity .3s ease; }
+    .splash.leave { clip-path: inset(0 0 0 0); opacity: 0; }
     .gauge .seg-fill, .btn, .habits input, .habits input::after, .habits label { transition: none; }
   }
 </style>
 </head>
 <body>
+<div class="progress" aria-hidden="true"></div>
+<div class="splash" id="splash" aria-hidden="true">
+  <div class="splash-stage">
+    <svg class="splash-ring" viewBox="0 0 200 200">
+      <defs>
+        <linearGradient id="heat-splash" gradientUnits="userSpaceOnUse" x1="12" y1="0" x2="188" y2="0">
+          <stop offset="0" stop-color="#FF6A3D"/>
+          <stop offset="0.55" stop-color="#FFA63A"/>
+          <stop offset="1" stop-color="#FFE0A3"/>
+        </linearGradient>
+      </defs>
+      <path class="ring-track" d="M37.77 162.23 A88 88 0 1 1 162.23 162.23"/>
+      <path class="ring-fill" pathLength="100" d="M37.77 162.23 A88 88 0 1 1 162.23 162.23"/>
+    </svg>
+    <div class="flash"></div>
+    <div class="mark-wrap"><img class="splash-mark" alt=""></div>
+    <div class="sparks"></div>
+  </div>
+  <div class="splash-word"></div>
+  <p class="splash-tag">Forge the arc of your life.</p>
+</div>
 <div class="wrap">
   <header class="site-header">
     <a class="wordmark" href="#top" aria-label="ForjArc home">
@@ -346,18 +438,21 @@
     var n = habits.filter(function (h) { return h.done; }).length;
     count.textContent = n;
     countSub.textContent = n === 6 ? "Arc complete" : "of 6 forged today";
+    document.querySelector(".gauge").classList.toggle("complete", n === 6);
   }
   update();
 
-  /* One orchestrated moment: the arc heats up segment by segment on load */
-  habits.forEach(function (h, i) {
-    if (!h.done) return;
-    var f = fillEls[i];
-    f.style.transitionDelay = reduce ? "0ms" : (350 + i * 180) + "ms";
-    requestAnimationFrame(function () {
-      requestAnimationFrame(function () { f.setAttribute("stroke-dashoffset", 0); });
+  /* The arc heats up segment by segment once the page is revealed */
+  function heatArc() {
+    habits.forEach(function (h, i) {
+      if (!h.done) return;
+      var f = fillEls[i];
+      f.style.transitionDelay = reduce ? "0ms" : (1100 + i * 220) + "ms";
+      requestAnimationFrame(function () {
+        requestAnimationFrame(function () { f.setAttribute("stroke-dashoffset", 0); });
+      });
     });
-  });
+  }
 
   /* Sample week */
   var week = [
@@ -377,7 +472,9 @@
     var d = arcPath(32, 32, 24, 135, 405);
     svg.appendChild(el("path", { d: d, "class": "seg-track", fill: "none", "stroke-width": 7, pathLength: 100, "stroke-linecap": "round" }));
     if (w.v > 0) {
-      svg.appendChild(el("path", { d: d, "class": "seg-fill", fill: "none", "stroke-width": 7, pathLength: 100, "stroke-linecap": "round", "stroke-dasharray": (w.v * 100) + " 100" }));
+      var wf = el("path", { d: d, "class": "seg-fill", fill: "none", "stroke-width": 7, pathLength: 100, "stroke-linecap": "round", "data-v": w.v * 100 });
+      wf.style.strokeDasharray = reduce ? (w.v * 100) + " 100" : "0 100";
+      svg.appendChild(wf);
     }
     wrap.appendChild(svg);
     var dd = document.createElement("div"); dd.className = "d"; dd.textContent = w.d;
@@ -385,6 +482,198 @@
     wrap.appendChild(dd); wrap.appendChild(pp);
     days.appendChild(wrap);
   });
+
+  /* ---------- Load and scroll motion ---------- */
+  var root = document.documentElement;
+
+  function splitWords(node, cls, wrapInner) {
+    var text = node.textContent.trim();
+    var out = [];
+    node.textContent = "";
+    var sr = document.createElement("span");
+    sr.className = "sr-only";
+    sr.textContent = text;
+    node.appendChild(sr);
+    text.split(/\s+/).forEach(function (w, i, arr) {
+      var s = document.createElement("span");
+      s.className = cls;
+      s.setAttribute("aria-hidden", "true");
+      if (wrapInner) {
+        var inner = document.createElement("span");
+        inner.className = "wi";
+        inner.textContent = w;
+        s.appendChild(inner);
+        out.push(inner);
+      } else {
+        s.textContent = w;
+        out.push(s);
+      }
+      node.appendChild(s);
+      if (i < arr.length - 1) node.appendChild(document.createTextNode(" "));
+    });
+    return out;
+  }
+
+  /* Headline words rise in one by one */
+  var h1 = document.getElementById("hero-title");
+  if (!reduce) {
+    splitWords(h1, "w", true).forEach(function (inner, i) {
+      inner.style.setProperty("--d", (150 + i * 90) + "ms");
+    });
+  }
+
+  /* The counter ticks up as each segment heats */
+  var userTouched = false;
+  list.addEventListener("change", function () { userTouched = true; });
+  if (!reduce) count.textContent = "0";
+  function countUp() {
+    if (reduce) return;
+    var shown = 0;
+    habits.forEach(function (h, i) {
+      if (!h.done) return;
+      setTimeout(function () {
+        shown++;
+        if (!userTouched) count.textContent = shown;
+      }, 1100 + i * 220 + 450);
+    });
+  }
+
+  var started = false;
+  function start() {
+    if (started) return;
+    started = true;
+    root.classList.add("is-loaded");
+    heatArc();
+    countUp();
+  }
+  var fontsReady = document.fonts && document.fonts.ready ? document.fonts.ready : Promise.resolve();
+  var fontsOrTimeout = Promise.race([fontsReady, new Promise(function (r) { setTimeout(r, 600); })]);
+
+  /* Splash: the logo drops in like a hammer strike, sparks fly, the arc forges around it */
+  var splash = document.getElementById("splash");
+  var seen = false;
+  try {
+    seen = sessionStorage.getItem("forjarc-splash") === "1";
+    sessionStorage.setItem("forjarc-splash", "1");
+  } catch (e) {}
+
+  var finished = false;
+  function finishSplash() {
+    if (finished) return;
+    finished = true;
+    splash.classList.add("leave");
+    root.classList.remove("splashing");
+    setTimeout(start, reduce ? 0 : 250);
+    setTimeout(function () { if (splash.parentNode) splash.parentNode.removeChild(splash); }, 1000);
+  }
+
+  if (seen || !splash) {
+    if (splash) splash.parentNode.removeChild(splash);
+    fontsOrTimeout.then(function () { requestAnimationFrame(start); });
+  } else {
+    root.classList.add("splashing");
+    var headerMark = document.querySelector(".wordmark img");
+    if (headerMark) splash.querySelector(".splash-mark").src = headerMark.src;
+
+    var word = splash.querySelector(".splash-word");
+    "ForjArc".split("").forEach(function (ch, i) {
+      var s = document.createElement("span");
+      s.textContent = ch;
+      s.style.setProperty("--d", (0.9 + i * 0.05) + "s");
+      word.appendChild(s);
+    });
+
+    var sparks = splash.querySelector(".sparks");
+    for (var k = 0; k < 18; k++) {
+      var ang = (-175 + Math.random() * 170) * Math.PI / 180;
+      var dist = 45 + Math.random() * 75;
+      var sp = document.createElement("span");
+      sp.className = "spark";
+      sp.style.setProperty("--x", (Math.cos(ang) * dist).toFixed(1) + "px");
+      sp.style.setProperty("--y", (Math.sin(ang) * dist).toFixed(1) + "px");
+      sp.style.setProperty("--r", (ang * 180 / Math.PI).toFixed(0) + "deg");
+      sp.style.setProperty("--t", (0.5 + Math.random() * 0.45).toFixed(2) + "s");
+      sparks.appendChild(sp);
+    }
+
+    splash.addEventListener("click", finishSplash);
+    if (reduce) {
+      splash.classList.add("static");
+      setTimeout(finishSplash, 800);
+    } else {
+      fontsOrTimeout.then(function () {
+        splash.classList.add("play");
+        setTimeout(finishSplash, 2400);
+      });
+    }
+  }
+
+  /* Sections reveal as they enter the screen */
+  var revealTargets = document.querySelectorAll(".week h2, .week .intro, .features h2, .feature, .final, footer");
+  revealTargets.forEach(function (t) { t.classList.add("reveal"); });
+  document.querySelectorAll(".feature").forEach(function (f, i) { f.style.setProperty("--d", (i % 2) * 120 + "ms"); });
+  document.querySelector(".week .intro").style.setProperty("--d", "120ms");
+
+  var dayFills = document.querySelectorAll(".day .seg-fill");
+  function fillWeek(animated) {
+    dayFills.forEach(function (f, i) {
+      var set = function () { f.style.strokeDasharray = f.getAttribute("data-v") + " 100"; };
+      animated ? setTimeout(set, i * 150) : set();
+    });
+  }
+
+  if ("IntersectionObserver" in window && !reduce) {
+    var io = new IntersectionObserver(function (entries) {
+      entries.forEach(function (e) {
+        if (!e.isIntersecting) return;
+        e.target.classList.add("in");
+        io.unobserve(e.target);
+      });
+    }, { threshold: 0.15, rootMargin: "0px 0px -8% 0px" });
+    revealTargets.forEach(function (t) { io.observe(t); });
+
+    var weekIO = new IntersectionObserver(function (entries) {
+      if (!entries[0].isIntersecting) return;
+      fillWeek(true);
+      weekIO.disconnect();
+    }, { threshold: 0.4 });
+    weekIO.observe(document.getElementById("days"));
+  } else {
+    revealTargets.forEach(function (t) { t.classList.add("in"); });
+    fillWeek(false);
+  }
+
+  /* Statement lights up word by word as you scroll through it */
+  var stmt = document.querySelector(".statement p");
+  var sws = reduce ? [] : splitWords(stmt, "sw", false);
+
+  var bar = document.querySelector(".progress");
+  var ticking = false;
+  function onScroll() {
+    ticking = false;
+    var vh = window.innerHeight;
+    var y = window.scrollY;
+    var max = document.documentElement.scrollHeight - vh;
+    if (bar) bar.style.transform = "scaleX(" + (max > 0 ? Math.min(1, y / max) : 0) + ")";
+
+    if (sws.length) {
+      var r = stmt.getBoundingClientRect();
+      var p = (vh * 0.85 - r.top) / (r.height + vh * 0.4);
+      p = Math.max(0, Math.min(1, p));
+      var lit = Math.round(p * sws.length);
+      for (var i = 0; i < sws.length; i++) sws[i].classList.toggle("lit", i < lit);
+    }
+
+    if (!reduce && y < vh * 1.2) {
+      h1.style.transform = "translateY(" + (y * 0.14).toFixed(1) + "px)";
+      h1.style.opacity = String(Math.max(0.4, 1 - (y / vh) * 0.7));
+    }
+  }
+  window.addEventListener("scroll", function () {
+    if (!ticking) { ticking = true; requestAnimationFrame(onScroll); }
+  }, { passive: true });
+  window.addEventListener("resize", onScroll);
+  onScroll();
 })();
 </script>
 </body>
